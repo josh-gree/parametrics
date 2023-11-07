@@ -1,5 +1,6 @@
 [package]
 name = "parametrics"
+description = "A crate for working with parametric functions"
 version = "0.1.0"
 edition = "2021"
 license = "Unlicense"
