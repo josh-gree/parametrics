@@ -17,3 +17,5 @@ Also allows for combination and modification of things which implement the trait
 - [Rotate](https://docs.rs/parametrics/newest/parametrics/core/struct.Rotate.html)
 - [Translate](https://docs.rs/parametrics/newest/parametrics/core/struct.Translate.html)
 - [RotateTranslate](https://docs.rs/parametrics/newest/parametrics/core/struct.RotateTranslate.html)
+
+The trait is implemented for `Fn(T) -> Point`
