@@ -1,0 +1,14 @@
+[package]
+name = "parametrics"
+version = "0.1.0"
+edition = "2021"
+license = "Unlicense"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+euclid = "0.22.9"
+rand = "0.8.5"
+
+[dev-dependencies]
+approx = "0.5.1"
