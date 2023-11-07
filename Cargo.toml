@@ -1,10 +1,11 @@
 [package]
 name = "parametrics"
 description = "A crate for working with parametric functions"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 license = "Unlicense"
 repository = "https://github.com/josh-gree/parametrics/"
+keywords = ["geometry", "2D"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
