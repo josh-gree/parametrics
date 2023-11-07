@@ -1,9 +1,10 @@
 [package]
 name = "parametrics"
 description = "A crate for working with parametric functions"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 license = "Unlicense"
+repository = "https://github.com/josh-gree/parametrics/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
