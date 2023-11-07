@@ -195,6 +195,15 @@ impl ParametricFunction2D for RotateTranslate {
     }
 }
 
+impl<F> ParametricFunction2D for F
+where
+    F: Fn(T) -> Point,
+{
+    fn evaluate(&self, t: T) -> Point {
+        self(t)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use approx::assert_relative_eq;
@@ -411,5 +420,20 @@ mod tests {
 
         assert_relative_eq!(res.x, -0.5, epsilon = f32::EPSILON * 10.0);
         assert_relative_eq!(res.y, 1.5, epsilon = f32::EPSILON * 10.0);
+    }
+
+    #[test]
+    fn test_for_closures() {
+        let foo = |t: T| Into::<Point>::into((t.value(), t.value()));
+
+        let res = foo.evaluate(T::start());
+        assert_relative_eq!(res.x, 0.0);
+        assert_relative_eq!(res.y, 0.0);
+
+        let c = Repeat {
+            function: Arc::new(Box::new(foo)),
+            n: 2,
+        };
+        c.linspace(10);
     }
 }
