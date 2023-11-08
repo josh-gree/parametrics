@@ -11,6 +11,16 @@ pub struct BezierSecond {
     pub control: Point,
 }
 
+impl BezierSecond {
+    pub fn new(start: Point, end: Point, control: Point) -> Self {
+        Self {
+            start,
+            end,
+            control,
+        }
+    }
+}
+
 impl ParametricFunction2D for BezierSecond {
     fn evaluate(&self, t: T) -> Point {
         let start = self.start;
@@ -40,6 +50,17 @@ pub struct BezierThird {
     pub end: Point,
     pub control1: Point,
     pub control2: Point,
+}
+
+impl BezierThird {
+    pub fn new(start: Point, end: Point, control1: Point, control2: Point) -> Self {
+        Self {
+            start,
+            end,
+            control1,
+            control2,
+        }
+    }
 }
 
 impl ParametricFunction2D for BezierThird {
@@ -84,6 +105,25 @@ pub struct BezierFourth {
     pub control2: Point,
     pub control3: Point,
 }
+
+impl BezierFourth {
+    pub fn new(
+        start: Point,
+        end: Point,
+        control1: Point,
+        control2: Point,
+        control3: Point,
+    ) -> Self {
+        Self {
+            start,
+            end,
+            control1,
+            control2,
+            control3,
+        }
+    }
+}
+
 impl ParametricFunction2D for BezierFourth {
     fn evaluate(&self, t: T) -> Point {
         let start = self.start;
@@ -130,6 +170,12 @@ pub struct BezierSecondSpline {
     pub points: Vec<Point>,
 }
 
+impl BezierSecondSpline {
+    pub fn new(points: Vec<Point>) -> Self {
+        Self { points }
+    }
+}
+
 impl ParametricFunction2D for BezierSecondSpline {
     fn evaluate(&self, t: T) -> Point {
         let step = 2;
@@ -156,6 +202,12 @@ impl ParametricFunction2D for BezierSecondSpline {
 /// Third Order Bezier spline
 pub struct BezierThirdSpline {
     pub points: Vec<Point>,
+}
+
+impl BezierThirdSpline {
+    pub fn new(points: Vec<Point>) -> Self {
+        Self { points }
+    }
 }
 
 impl ParametricFunction2D for BezierThirdSpline {
@@ -185,6 +237,12 @@ impl ParametricFunction2D for BezierThirdSpline {
 /// Fourth Order Bezier spline
 pub struct BezierFourthSpline {
     pub points: Vec<Point>,
+}
+
+impl BezierFourthSpline {
+    pub fn new(points: Vec<Point>) -> Self {
+        Self { points }
+    }
 }
 
 impl ParametricFunction2D for BezierFourthSpline {
@@ -236,11 +294,7 @@ mod tests {
 
     #[test]
     fn test_bezier_second() {
-        let b = BezierSecond {
-            start: (0.0, 0.0).into(),
-            end: (2.0, 0.0).into(),
-            control: (1.0, 1.0).into(),
-        };
+        let b = BezierSecond::new((0.0, 0.0).into(), (2.0, 0.0).into(), (1.0, 1.0).into());
 
         let t = T::start();
         let res = b.evaluate(t);
@@ -263,12 +317,12 @@ mod tests {
 
     #[test]
     fn test_bezier_second_spline() {
-        let b = BezierSecondSpline {
-            points: vec![(0.0, 0.0), (1.0, 1.0), (2.0, 0.0), (3.0, 1.0), (4.0, 0.0)]
+        let b = BezierSecondSpline::new(
+            vec![(0.0, 0.0), (1.0, 1.0), (2.0, 0.0), (3.0, 1.0), (4.0, 0.0)]
                 .into_iter()
                 .map(|p| p.into())
                 .collect(),
-        };
+        );
 
         let t = T::start();
         let res = b.evaluate(t);
@@ -297,12 +351,12 @@ mod tests {
 
     #[test]
     fn test_bezier_third() {
-        let b = BezierThird {
-            start: (0.0, 0.0).into(),
-            end: (1.0, 0.0).into(),
-            control1: (0.0, 1.0).into(),
-            control2: (1.0, 1.0).into(),
-        };
+        let b = BezierThird::new(
+            (0.0, 0.0).into(),
+            (1.0, 0.0).into(),
+            (0.0, 1.0).into(),
+            (1.0, 1.0).into(),
+        );
 
         let t = T::start();
         let res = b.evaluate(t);
@@ -325,8 +379,8 @@ mod tests {
 
     #[test]
     fn test_bezier_third_spline() {
-        let b = BezierThirdSpline {
-            points: vec![
+        let b = BezierThirdSpline::new(
+            vec![
                 (0.0, 0.0),
                 (0.0, 1.0),
                 (1.0, 1.0),
@@ -338,7 +392,7 @@ mod tests {
             .into_iter()
             .map(|p| p.into())
             .collect(),
-        };
+        );
 
         let t = T::start();
         let res = b.evaluate(t);
@@ -367,13 +421,13 @@ mod tests {
 
     #[test]
     fn test_bezier_fourth() {
-        let b = BezierFourth {
-            start: (0.0, 0.0).into(),
-            end: (2.0, 0.0).into(),
-            control1: (0.5, 1.0).into(),
-            control2: (1.0, 0.5).into(),
-            control3: (1.5, 1.0).into(),
-        };
+        let b = BezierFourth::new(
+            (0.0, 0.0).into(),
+            (2.0, 0.0).into(),
+            (0.5, 1.0).into(),
+            (1.0, 0.5).into(),
+            (1.5, 1.0).into(),
+        );
 
         let t = T::start();
         let res = b.evaluate(t);
@@ -396,8 +450,8 @@ mod tests {
 
     #[test]
     fn test_bezier_fourth_spline() {
-        let b = BezierFourthSpline {
-            points: vec![
+        let b = BezierFourthSpline::new(
+            vec![
                 (0.0, 0.0),
                 (0.5, 1.0),
                 (1.0, 0.5),
@@ -411,7 +465,7 @@ mod tests {
             .into_iter()
             .map(|p| p.into())
             .collect(),
-        };
+        );
 
         let t = T::start();
         let res = b.evaluate(t);

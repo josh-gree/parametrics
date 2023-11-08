@@ -8,6 +8,15 @@ pub struct Segment {
     pub end: Point,
 }
 
+impl Segment {
+    pub fn new(start: Point, end: Point) -> Self {
+        Self {
+            start: start,
+            end: end,
+        }
+    }
+}
+
 impl ParametricFunction2D for Segment {
     fn evaluate(&self, t: T) -> Point {
         let dir = (-self.start.x + self.end.x, -self.start.y + self.end.y);
@@ -24,10 +33,7 @@ mod tests {
 
     #[test]
     fn test_segment() {
-        let s = Segment {
-            start: (0.0, 0.0).into(),
-            end: (1.0, 2.0).into(),
-        };
+        let s = Segment::new((0.0, 0.0).into(), (1.0, 2.0).into());
 
         let res = s.evaluate(T::new(0.5));
         assert_relative_eq!(res.x, 0.5);

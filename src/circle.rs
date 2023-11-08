@@ -10,6 +10,16 @@ pub struct Circle {
     pub start_angle: T,
 }
 
+impl Circle {
+    pub fn new(centre: Point, radius: f32, start_angle: Option<T>) -> Self {
+        Self {
+            centre,
+            radius,
+            start_angle: start_angle.unwrap_or(T::start()),
+        }
+    }
+}
+
 /// A circle Rc of radius `r`, centred at a point - parameterisation starting at a given "angle" `start_angle`
 /// and ending at `end_angle` - "angles" are "turns" as described in [`Circle`]
 pub struct CircleArc {
@@ -17,6 +27,17 @@ pub struct CircleArc {
     pub radius: f32,
     pub start_angle: T,
     pub end_angle: T,
+}
+
+impl CircleArc {
+    pub fn new(centre: Point, radius: f32, start_angle: Option<T>, end_angle: Option<T>) -> Self {
+        Self {
+            centre: centre,
+            radius: radius,
+            start_angle: start_angle.unwrap_or(T::start()),
+            end_angle: end_angle.unwrap_or(T::end()),
+        }
+    }
 }
 
 impl ParametricFunction2D for CircleArc {
@@ -56,31 +77,19 @@ mod tests {
 
     #[test]
     fn test_circle() {
-        let c = Circle {
-            centre: (0.0, 0.0).into(),
-            radius: 1.0,
-            start_angle: T::start(),
-        };
+        let c = Circle::new((0.0, 0.0).into(), 1.0, None);
 
         let res = c.evaluate(T::new(0.5));
         assert_relative_eq!(res.x, -1.0, epsilon = f32::EPSILON * 10.0);
         assert_relative_eq!(res.y, 0.0, epsilon = f32::EPSILON * 10.0);
 
-        let c = Circle {
-            centre: (0.0, 0.0).into(),
-            radius: 1.0,
-            start_angle: T::new(0.5),
-        };
+        let c = Circle::new((0.0, 0.0).into(), 1.0, Some(T::new(0.5)));
 
         let res = c.evaluate(T::new(0.5));
         assert_relative_eq!(res.x, 1.0, epsilon = f32::EPSILON * 10.0);
         assert_relative_eq!(res.y, 0.0, epsilon = f32::EPSILON * 10.0);
 
-        let c = Circle {
-            centre: (1.0, 1.0).into(),
-            radius: 2.0,
-            start_angle: T::start(),
-        };
+        let c = Circle::new((1.0, 1.0).into(), 2.0, None);
 
         let res = c.evaluate(T::new(0.5));
         assert_relative_eq!(res.x, -1.0, epsilon = f32::EPSILON * 10.0);
@@ -89,12 +98,7 @@ mod tests {
 
     #[test]
     fn test_circle_arc() {
-        let ca = CircleArc {
-            centre: (0.0, 0.0).into(),
-            radius: 1.0,
-            start_angle: T::start(),
-            end_angle: T::new(0.25),
-        };
+        let ca = CircleArc::new((0.0, 0.0).into(), 1.0, None, Some(T::new(0.25)));
 
         let res = ca.evaluate(T::start());
         assert_relative_eq!(res.x, 1.0, epsilon = f32::EPSILON * 10.0);
