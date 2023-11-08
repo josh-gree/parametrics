@@ -1,7 +1,7 @@
 [package]
 name = "parametrics"
 description = "A crate for working with parametric functions"
-version = "1.2.1"
+version = "1.3.0"
 edition = "2021"
 license = "Unlicense"
 repository = "https://github.com/josh-gree/parametrics/"
