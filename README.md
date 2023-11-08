@@ -2,6 +2,8 @@
 
 A crate the allows for working with parametric functions.
 
+## 2D Parametric functions
+
 Contains a trait for 2d parametric functions and the following implementations;
 
 - [Segment](https://docs.rs/parametrics/newest/parametrics/segment/struct.Segment.html)
@@ -18,4 +20,10 @@ Also allows for combination and modification of things which implement the trait
 - [Translate](https://docs.rs/parametrics/newest/parametrics/core/struct.Translate.html)
 - [RotateTranslate](https://docs.rs/parametrics/newest/parametrics/core/struct.RotateTranslate.html)
 
-The trait is implemented for `Fn(T) -> Point`
+The trait is implemented for `Fn(T) -> Point` and `(F,G) where F: ParametricFunction1D, G: ParametricFunction1D`
+
+## 1D Parametric functions
+
+The trait is implemented for `Fn(T) -> f32`
+
+
