@@ -81,6 +81,46 @@ pub trait ParametricFunction2D {
     }
 }
 
+/// 1D parametric function trait
+pub trait ParametricFunction1D {
+    /// returns the value of the parametric function at the point `t`
+    fn evaluate(&self, t: T) -> f32;
+
+    /// returns `n` equally spaced points along the entire parametric function from [`T::start`] to [`T::end`]
+    fn linspace(&self, n: usize) -> Vec<f32> {
+        let step_size = 1.0 / n as f32;
+        (0..=n)
+            .into_iter()
+            .map(|i| {
+                let t = T::new((i as f32) * step_size);
+                self.evaluate(t)
+            })
+            .collect()
+    }
+
+    /// returns start, or "first", point on the parametric function
+    fn start(&self) -> f32 {
+        self.evaluate(T::start())
+    }
+
+    /// returns end, or"last", point on the parametric function
+    fn end(&self) -> f32 {
+        self.evaluate(T::end())
+    }
+
+    /// return a random point on the parametric function
+    fn random_point(&self) -> f32 {
+        let mut rng = rand::thread_rng();
+        let t = T::new(rng.gen());
+        self.evaluate(t)
+    }
+
+    /// return n random points on the parametric function
+    fn random_points(&self, n: usize) -> Vec<f32> {
+        (0..n).into_iter().map(|_| self.random_point()).collect()
+    }
+}
+
 /// The concatenation of multiple things that implement [`ParametricFunction2D`]
 pub struct Concat {
     pub functions: Vec<Arc<Box<dyn ParametricFunction2D>>>,
@@ -201,6 +241,25 @@ where
 {
     fn evaluate(&self, t: T) -> Point {
         self(t)
+    }
+}
+
+impl<F> ParametricFunction1D for F
+where
+    F: Fn(T) -> f32,
+{
+    fn evaluate(&self, t: T) -> f32 {
+        self(t)
+    }
+}
+
+impl<F, G> ParametricFunction2D for (F, G)
+where
+    F: ParametricFunction1D,
+    G: ParametricFunction1D,
+{
+    fn evaluate(&self, t: T) -> Point {
+        (self.0.evaluate(t), self.1.evaluate(t)).into()
     }
 }
 
@@ -435,5 +494,26 @@ mod tests {
             n: 2,
         };
         c.linspace(10);
+    }
+
+    #[test]
+    fn test_1d() {
+        let foo = |t: T| t.value();
+        let res = foo.evaluate(T::start());
+        assert_relative_eq!(res, 0.0);
+
+        let bar = (foo, foo);
+        let res = bar.evaluate(T::start());
+        assert_relative_eq!(res.x, 0.0);
+        assert_relative_eq!(res.y, 0.0);
+
+        let rep = Repeat {
+            function: Arc::new(Box::new(bar)),
+            n: 2,
+        };
+
+        let res = rep.evaluate(T::new(0.5));
+        assert_relative_eq!(res.x, 0.0);
+        assert_relative_eq!(res.y, 0.0);
     }
 }
