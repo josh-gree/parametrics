@@ -1,6 +1,6 @@
 //! Bezier curves
 
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crate::{core::Concat, core::ParametricFunction2D, core::Point, core::T, segment::Segment};
 
@@ -140,7 +140,7 @@ impl ParametricFunction2D for BezierSecondSpline {
             .filter(|&(i, _)| i % step == 0)
             .map(|(_, t)| {
                 let t = t.to_vec();
-                Arc::new(Box::new(BezierSecond {
+                Rc::new(Box::new(BezierSecond {
                     start: t[0],
                     end: t[2],
                     control: t[1],
@@ -168,7 +168,7 @@ impl ParametricFunction2D for BezierThirdSpline {
             .filter(|&(i, _)| i % step == 0)
             .map(|(_, t)| {
                 let t = t.to_vec();
-                Arc::new(Box::new(BezierThird {
+                Rc::new(Box::new(BezierThird {
                     start: t[0],
                     end: t[3],
                     control1: t[1],
@@ -196,7 +196,7 @@ impl ParametricFunction2D for BezierFourthSpline {
             .enumerate()
             .filter(|&(i, _)| i % step == 0)
             .map(|(_, t)| {
-                Arc::new(Box::new(BezierFourth {
+                Rc::new(Box::new(BezierFourth {
                     start: t[0],
                     end: t[4],
                     control1: t[1],

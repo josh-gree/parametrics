@@ -10,6 +10,6 @@ pub use crate::bezier::{
     BezierThirdSpline,
 };
 pub use crate::circle::Circle;
-pub use crate::circle::CircleArc;
+pub use crate::circle::CircleRc;
 pub use crate::core::{Concat, Point, Repeat, Rotate, RotateTranslate, Translate, T};
 pub use crate::segment::Segment;

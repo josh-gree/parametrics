@@ -1,8 +1,9 @@
 //! Core structs and traits
 
+use std::rc::Rc;
+
 use euclid::{Point2D, UnknownUnit};
 use rand::prelude::*;
-use std::sync::Arc;
 
 /// The parametric value t
 #[derive(Clone, Copy, PartialEq)]
@@ -50,7 +51,6 @@ pub trait ParametricFunction2D {
     fn linspace(&self, n: usize) -> Vec<Point> {
         let step_size = 1.0 / n as f32;
         (0..=n)
-            .into_iter()
             .map(|i| {
                 let t = T::new((i as f32) * step_size);
                 self.evaluate(t)
@@ -77,7 +77,7 @@ pub trait ParametricFunction2D {
 
     /// return n random points on the parametric function
     fn random_points(&self, n: usize) -> Vec<Point> {
-        (0..n).into_iter().map(|_| self.random_point()).collect()
+        (0..n).map(|_| self.random_point()).collect()
     }
 }
 
@@ -90,7 +90,6 @@ pub trait ParametricFunction1D {
     fn linspace(&self, n: usize) -> Vec<f32> {
         let step_size = 1.0 / n as f32;
         (0..=n)
-            .into_iter()
             .map(|i| {
                 let t = T::new((i as f32) * step_size);
                 self.evaluate(t)
@@ -117,13 +116,13 @@ pub trait ParametricFunction1D {
 
     /// return n random points on the parametric function
     fn random_points(&self, n: usize) -> Vec<f32> {
-        (0..n).into_iter().map(|_| self.random_point()).collect()
+        (0..n).map(|_| self.random_point()).collect()
     }
 }
 
 /// The concatenation of multiple things that implement [`ParametricFunction2D`]
 pub struct Concat {
-    pub functions: Vec<Arc<Box<dyn ParametricFunction2D>>>,
+    pub functions: Vec<Rc<Box<dyn ParametricFunction2D>>>,
 }
 
 impl ParametricFunction2D for Concat {
@@ -150,22 +149,19 @@ impl ParametricFunction2D for Concat {
 
 /// The repetition `n` times of a thing that implements [`ParametricFunction2D`]
 pub struct Repeat {
-    pub function: Arc<Box<dyn ParametricFunction2D>>,
+    pub function: Rc<Box<dyn ParametricFunction2D>>,
     pub n: usize,
 }
 impl ParametricFunction2D for Repeat {
     fn evaluate(&self, t: T) -> Point {
-        let functions = (0..self.n)
-            .into_iter()
-            .map(|_| self.function.clone())
-            .collect();
+        let functions = (0..self.n).map(|_| self.function.clone()).collect();
         let concat = Concat { functions };
         concat.evaluate(t)
     }
 }
 /// The rotation around `centre` by `angle` (in "turns") of a thing that implements [`ParametricFunction2D`]
 pub struct Rotate {
-    pub function: Arc<Box<dyn ParametricFunction2D>>,
+    pub function: Rc<Box<dyn ParametricFunction2D>>,
     pub centre: Point,
     pub angle: T,
 }
@@ -187,7 +183,7 @@ impl ParametricFunction2D for Rotate {
 
 /// The translation by `by` of a thing that implements [`ParametricFunction2D`]
 pub struct Translate {
-    pub function: Arc<Box<dyn ParametricFunction2D>>,
+    pub function: Rc<Box<dyn ParametricFunction2D>>,
     pub by: Point,
 }
 
@@ -200,7 +196,7 @@ impl ParametricFunction2D for Translate {
 
 /// Combination of [`Rotate`] and [`Translate`]
 pub struct RotateTranslate {
-    pub function: Arc<Box<dyn ParametricFunction2D>>,
+    pub function: Rc<Box<dyn ParametricFunction2D>>,
     pub by: Point,
     pub centre: Point,
     pub angle: T,
@@ -216,7 +212,7 @@ impl ParametricFunction2D for RotateTranslate {
                 angle: self.angle,
             };
             let tr = Translate {
-                function: Arc::new(Box::new(r)),
+                function: Rc::new(Box::new(r)),
                 by: self.by,
             };
             tr.evaluate(t)
@@ -226,7 +222,7 @@ impl ParametricFunction2D for RotateTranslate {
                 by: self.by,
             };
             let r = Rotate {
-                function: Arc::new(Box::new(tr)),
+                function: Rc::new(Box::new(tr)),
                 centre: self.centre,
                 angle: self.angle,
             };
@@ -262,7 +258,6 @@ where
         (self.0.evaluate(t), self.1.evaluate(t)).into()
     }
 }
-
 #[cfg(test)]
 mod tests {
     use approx::assert_relative_eq;
@@ -278,7 +273,7 @@ mod tests {
             end: (1.0, 1.0).into(),
         };
         let rep = Repeat {
-            function: Arc::new(Box::new(s)),
+            function: Rc::new(Box::new(s)),
             n: 2,
         };
 
@@ -310,7 +305,7 @@ mod tests {
         };
 
         let concat = Concat {
-            functions: vec![Arc::new(Box::new(s1)), Arc::new(Box::new(s2))],
+            functions: vec![Rc::new(Box::new(s1)), Rc::new(Box::new(s2))],
         };
 
         let res = concat.evaluate(T::start());
@@ -341,10 +336,10 @@ mod tests {
         };
 
         let concat = Concat {
-            functions: vec![Arc::new(Box::new(s1)), Arc::new(Box::new(s2))],
+            functions: vec![Rc::new(Box::new(s1)), Rc::new(Box::new(s2))],
         };
         let repeat = Repeat {
-            function: Arc::new(Box::new(concat)),
+            function: Rc::new(Box::new(concat)),
             n: 2,
         };
 
@@ -388,7 +383,7 @@ mod tests {
             end: (1.0, 1.0).into(),
         };
         let r = Rotate {
-            function: Arc::new(Box::new(s)),
+            function: Rc::new(Box::new(s)),
             centre: (0.5, 0.5).into(),
             angle: T::new(0.25),
         };
@@ -413,7 +408,7 @@ mod tests {
             end: (1.0, 1.0).into(),
         };
         let tr = Translate {
-            function: Arc::new(Box::new(s)),
+            function: Rc::new(Box::new(s)),
             by: (0.5, 0.5).into(),
         };
 
@@ -437,7 +432,7 @@ mod tests {
             end: (1.0, 1.0).into(),
         };
         let r_tr = RotateTranslate {
-            function: Arc::new(Box::new(s)),
+            function: Rc::new(Box::new(s)),
             centre: (0.5, 0.5).into(),
             angle: T::new(0.25),
             by: (0.5, 0.5).into(),
@@ -461,7 +456,7 @@ mod tests {
             end: (1.0, 1.0).into(),
         };
         let r_tr = RotateTranslate {
-            function: Arc::new(Box::new(s)),
+            function: Rc::new(Box::new(s)),
             centre: (0.5, 0.5).into(),
             angle: T::new(0.25),
             by: (0.5, 0.5).into(),
@@ -490,7 +485,7 @@ mod tests {
         assert_relative_eq!(res.y, 0.0);
 
         let c = Repeat {
-            function: Arc::new(Box::new(foo)),
+            function: Rc::new(Box::new(foo)),
             n: 2,
         };
         c.linspace(10);
@@ -508,7 +503,7 @@ mod tests {
         assert_relative_eq!(res.y, 0.0);
 
         let rep = Repeat {
-            function: Arc::new(Box::new(bar)),
+            function: Rc::new(Box::new(bar)),
             n: 2,
         };
 

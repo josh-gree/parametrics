@@ -1,4 +1,4 @@
-//! Circles and Arcs
+//! Circles and Rcs
 
 use crate::core::{ParametricFunction2D, Point, T};
 
@@ -10,24 +10,23 @@ pub struct Circle {
     pub start_angle: T,
 }
 
-/// A circle Arc of radius `r`, centred at a point - parameterisation starting at a given "angle" `start_angle`
+/// A circle Rc of radius `r`, centred at a point - parameterisation starting at a given "angle" `start_angle`
 /// and ending at `end_angle` - "angles" are "turns" as described in [`Circle`]
-pub struct CircleArc {
+pub struct CircleRc {
     pub centre: Point,
     pub radius: f32,
     pub start_angle: T,
     pub end_angle: T,
 }
 
-impl ParametricFunction2D for CircleArc {
+impl ParametricFunction2D for CircleRc {
     fn evaluate(&self, t: T) -> Point {
         let c = self.centre;
         let r = self.radius;
         let start_angle = self.start_angle;
         let end_angle = self.end_angle;
 
-        let theta =
-            end_angle.value() * t.value() + (f32::from(1.0) - t.value()) * start_angle.value();
+        let theta = end_angle.value() * t.value() + (1.0 - t.value()) * start_angle.value();
         (
             c.x + r * f32::cos(theta * std::f32::consts::TAU),
             c.y + r * f32::sin(theta * std::f32::consts::TAU),
@@ -89,8 +88,8 @@ mod tests {
     }
 
     #[test]
-    fn test_circle_arc() {
-        let ca = CircleArc {
+    fn test_circle_Rc() {
+        let ca = CircleRc {
             centre: (0.0, 0.0).into(),
             radius: 1.0,
             start_angle: T::start(),
