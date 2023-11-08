@@ -12,14 +12,14 @@ pub struct Circle {
 
 /// A circle Rc of radius `r`, centred at a point - parameterisation starting at a given "angle" `start_angle`
 /// and ending at `end_angle` - "angles" are "turns" as described in [`Circle`]
-pub struct CircleRc {
+pub struct CircleArc {
     pub centre: Point,
     pub radius: f32,
     pub start_angle: T,
     pub end_angle: T,
 }
 
-impl ParametricFunction2D for CircleRc {
+impl ParametricFunction2D for CircleArc {
     fn evaluate(&self, t: T) -> Point {
         let c = self.centre;
         let r = self.radius;
@@ -88,8 +88,8 @@ mod tests {
     }
 
     #[test]
-    fn test_circle_Rc() {
-        let ca = CircleRc {
+    fn test_circle_arc() {
+        let ca = CircleArc {
             centre: (0.0, 0.0).into(),
             radius: 1.0,
             start_angle: T::start(),
