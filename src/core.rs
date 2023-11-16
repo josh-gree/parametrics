@@ -258,11 +258,31 @@ where
         (self.0.evaluate(t), self.1.evaluate(t)).into()
     }
 }
+
+pub struct Scale {
+    pub function: Rc<Box<dyn ParametricFunction2D>>,
+    pub centre: Point,
+    pub scale_x: f32,
+    pub scale_y: f32,
+}
+
+impl ParametricFunction2D for Scale {
+    fn evaluate(&self, t: T) -> Point {
+        let val = self.function.evaluate(t);
+        let val_trans_origin: Point = (val.x - self.centre.x, val.y - self.centre.y).into();
+        let scaled: Point = (
+            val_trans_origin.x * self.scale_x,
+            val_trans_origin.y * self.scale_y,
+        )
+            .into();
+        (scaled.x + self.centre.x, scaled.y + self.centre.y).into()
+    }
+}
 #[cfg(test)]
 mod tests {
     use approx::assert_relative_eq;
 
-    use crate::segment::Segment;
+    use crate::{segment::Segment, Circle};
 
     use super::*;
 
@@ -510,5 +530,24 @@ mod tests {
         let res = rep.evaluate(T::new(0.5));
         assert_relative_eq!(res.x, 0.0);
         assert_relative_eq!(res.y, 0.0);
+    }
+
+    #[test]
+    fn test_scale() {
+        let c = Circle::new((1.0, 1.0).into(), 10.0, None);
+        let scaled_c = Scale {
+            function: Rc::new(Box::new(c)),
+            centre: (1.0, 1.0).into(),
+            scale_x: 0.5,
+            scale_y: 2.0,
+        };
+
+        let s = scaled_c.start();
+        assert_relative_eq!(s.x, 6.0, epsilon = f32::EPSILON * 10.0);
+        assert_relative_eq!(s.y, 1.0, epsilon = f32::EPSILON * 10.0);
+
+        let s = scaled_c.evaluate(T::new(0.25));
+        assert_relative_eq!(s.x, 1.0, epsilon = f32::EPSILON * 10.0);
+        assert_relative_eq!(s.y, 21.0, epsilon = f32::EPSILON * 10.0);
     }
 }

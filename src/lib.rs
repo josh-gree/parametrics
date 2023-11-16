@@ -11,5 +11,5 @@ pub use crate::bezier::{
 };
 pub use crate::circle::Circle;
 pub use crate::circle::CircleArc;
-pub use crate::core::{Concat, Point, Repeat, Rotate, RotateTranslate, Translate, T};
+pub use crate::core::{Concat, Point, Repeat, Rotate, RotateTranslate, Scale, Translate, T};
 pub use crate::segment::Segment;
